@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="UTSAVIA User Dashboard">
+  <title>Dashboard | UTSAVIA</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <header class="header" aria-label="Main Navigation">
+    <div class="container header__container">
+      <a href="index.html" class="logo" aria-label="UTSAVIA Home">
+        <span class="logo__text">UTSAVIA</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <ul class="nav__list">
+          <li><a href="features.html" class="nav__link">Features</a></li>
+          <li><a href="colleges.html" class="nav__link">For Colleges</a></li>
+          <li><a href="students.html" class="nav__link">For Students</a></li>
+          <li><a href="sponsors.html" class="nav__link">For Sponsors</a></li>
+          <li><a href="about.html" class="nav__link">About</a></li>
+        </ul>
+      </nav>
+      <div class="header__cta">
+        <button id="logout-btn" class="btn btn--secondary">Logout</button>
+      </div>
+      <button class="nav__toggle" aria-label="Open navigation menu" aria-expanded="false">
+        <span class="nav__toggle-bar"></span>
+        <span class="nav__toggle-bar"></span>
+        <span class="nav__toggle-bar"></span>
+      </button>
+    </div>
+  </header>
+  <main>
+    <section class="dashboard-section" aria-labelledby="dashboard-title">
+      <div class="container dashboard-container">
+        <h1 id="dashboard-title" class="section-title">Welcome to Your Dashboard</h1>
+        <p id="dashboard-greeting" class="dashboard-greeting"></p>
+        <div id="dashboard-notifications" class="dashboard-notifications"></div>
+        <div id="dashboard-role-content"></div>
+        <div id="dashboard-analytics"></div>
+        <div class="dashboard-profile">
+          <h2 class="dashboard-profile__title">Your Profile</h2>
+          <form id="profile-form" class="dashboard-profile__form">
+            <label for="profile-name">Name</label>
+            <input type="text" id="profile-name" name="profile-name" required>
+            <label for="profile-password">Change Password</label>
+            <input type="password" id="profile-password" name="profile-password" placeholder="Leave blank to keep current">
+            <button type="submit" class="btn btn--primary">Save Changes</button>
+            <div id="profile-success" style="display:none;color:var(--color-accent);margin-top:0.5em;">Profile updated!</div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" aria-label="Footer">
+    <div class="container footer__container">
+      <div class="footer__left">
+        <span class="footer__logo">UTSAVIA</span>
+        <p class="footer__copyright">&copy; 2024 UTSAVIA. All rights reserved.</p>
+      </div>
+      <nav class="footer__nav" aria-label="Footer Navigation">
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="colleges.html">For Colleges</a></li>
+          <li><a href="students.html">For Students</a></li>
+          <li><a href="sponsors.html">For Sponsors</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </nav>
+      <div class="footer__social">
+        <a href="#" aria-label="LinkedIn"><img src="assets/social/linkedin.svg" alt="LinkedIn" loading="lazy"></a>
+        <a href="#" aria-label="Twitter"><img src="assets/social/twitter.svg" alt="Twitter" loading="lazy"></a>
+      </div>
+    </div>
+  </footer>
+  <script src="scripts.js" defer></script>
+  <script>
+    // Dashboard session check and greeting
+    (function() {
+      const user = JSON.parse(sessionStorage.getItem('utsaviaUser'));
+      const greeting = document.getElementById('dashboard-greeting');
+      if (!user || !user.name || !user.role) {
+        window.location.href = 'login.html';
+        return;
+      }
+      greeting.textContent = `Hello, ${user.name}! You are logged in as ${user.role.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}.`;
+      document.getElementById('logout-btn').addEventListener('click', function() {
+        sessionStorage.removeItem('utsaviaUser');
+        window.location.href = 'login.html';
+      });
+      // Notifications/messages (demo)
+      const notifications = document.getElementById('dashboard-notifications');
+      notifications.innerHTML = `<div class='dashboard-notification'><strong>Welcome!</strong> This is a demo dashboard. All analytics and reports are for illustration only.</div>`;
+      // Role-based content
+      const roleContent = document.getElementById('dashboard-role-content');
+      const analytics = document.getElementById('dashboard-analytics');
+      if (user.role === 'sponsor') {
+        roleContent.innerHTML = `<h2>Sponsor Tools</h2><ul><li>Browse and sponsor events</li><li>View campaign analytics</li><li>Download reports</li></ul>`;
+        analytics.innerHTML = `
+          <div class='dashboard-analytics'>
+            <h2>Campaign Analytics</h2>
+            <ul>
+              <li>Active Campaigns: <strong>3</strong></li>
+              <li>Impressions: <strong>12,500</strong></li>
+              <li>Leads Generated: <strong>87</strong></li>
+              <li>ROI: <strong>4.2x</strong></li>
+            </ul>
+            <button class='btn btn--secondary' onclick='alert("Demo: Downloading report...")'>Download Report (PDF)</button>
+          </div>
+        `;
+      } else if (user.role === 'college-admin') {
+        roleContent.innerHTML = `<h2>College Admin Tools</h2><ul><li>Manage fest planning</li><li>Assign team roles</li><li>View sponsor matches</li></ul>`;
+        analytics.innerHTML = `
+          <div class='dashboard-analytics'>
+            <h2>Event Analytics</h2>
+            <ul>
+              <li>Upcoming Events: <strong>2</strong></li>
+              <li>Registered Students: <strong>340</strong></li>
+              <li>Sponsors Secured: <strong>5</strong></li>
+              <li>Budget Utilization: <strong>78%</strong></li>
+            </ul>
+            <button class='btn btn--secondary' onclick='alert("Demo: Exporting report...")'>Export Report (Excel)</button>
+          </div>
+        `;
+      } else if (user.role === 'event-team') {
+        roleContent.innerHTML = `<h2>Event Management Tools</h2><ul><li>Track assigned tasks</li><li>Collaborate with team</li><li>Update event progress</li></ul>`;
+        analytics.innerHTML = `
+          <div class='dashboard-analytics'>
+            <h2>Task Progress Analytics</h2>
+            <ul>
+              <li>Tasks Assigned: <strong>12</strong></li>
+              <li>Tasks Completed: <strong>9</strong></li>
+              <li>Upcoming Deadlines: <strong>3</strong></li>
+              <li>Team Collaboration Score: <strong>92%</strong></li>
+            </ul>
+          </div>
+        `;
+      }
+      // Profile form
+      const profileForm = document.getElementById('profile-form');
+      const profileName = document.getElementById('profile-name');
+      const profilePassword = document.getElementById('profile-password');
+      const profileSuccess = document.getElementById('profile-success');
+      profileName.value = user.name;
+      profileForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        let users = JSON.parse(localStorage.getItem('utsaviaUsers') || '[]');
+        const idx = users.findIndex(u => u.email === user.email && u.role === user.role);
+        if (idx !== -1) {
+          users[idx].name = profileName.value.trim();
+          if (profilePassword.value.trim()) {
+            users[idx].password = profilePassword.value;
+          }
+          localStorage.setItem('utsaviaUsers', JSON.stringify(users));
+          sessionStorage.setItem('utsaviaUser', JSON.stringify({ ...user, name: profileName.value.trim() }));
+          profileSuccess.style.display = 'block';
+          setTimeout(() => profileSuccess.style.display = 'none', 2000);
+          document.getElementById('dashboard-greeting').textContent = `Hello, ${profileName.value.trim()}! You are logged in as ${user.role.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}.`;
+        }
+      });
+    })();
+  </script>
+</body>
+</html> 
